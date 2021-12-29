@@ -3,10 +3,6 @@
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 using namespace std;
 
-struct Dou {
-	int num;
-	int price;
-};
 int main() {
 	int n;
 	cin >> n;
