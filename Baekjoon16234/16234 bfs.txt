@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <cmath>
+#include <set>
+using namespace std;
+int N, L, R;
+int dx[4] = { 1,-1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int Map[51][51];
+int Visited[51][51];
+int Bord[51][51];
+int temp[51][51];
+set<int> tr;
+int check() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (Bord[i][j] != temp[i][j]) return 0;
+		}
+	}
+	return 1;
+}
+void bfs(int x, int y) {
+	queue<pair<int, int>> que;
+	que.push({ x,y });
+	Visited[x][y] = true;
+	while (!que.empty()) {
+		x = que.front().first;
+		y = que.front().second;
+		que.pop();
+		for (int i = 0; i < 4; i++) {
+			int nx = dx[i] + x;
+			int ny = dy[i] + y;
+			if (nx >= 0 && nx < N && ny >= 0 && ny < N && !Visited[nx][ny]) {
+				if (abs(Map[x][y] - Map[nx][ny]) >= L && abs(Map[x][y] - Map[nx][ny]) <= R) {
+					Bord[nx][ny] = Bord[x][y];
+					tr.insert(Bord[x][y]);
+					que.push({ nx,ny });
+					Visited[nx][ny] = true;
+				}
+
+			}
+		}
+	}
+}
+int main() {
+	cin >> N >> L >> R;
+	int cnt = 1;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> Map[i][j];
+			temp[i][j] = cnt++;
+		}
+	}
+	int day = 0;
+	while (1) {
+		tr.clear();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				Bord[i][j] = temp[i][j];
+				Visited[i][j] = 0;
+			}
+		}
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if(!Visited[i][j]) bfs(i, j);
+			}
+		}
+		for (auto iter=tr.begin(); iter!=tr.end(); iter++) {
+			int to = 0;
+			int sum = 0;
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (Bord[i][j] == *iter) {
+						to++;
+						sum += Map[i][j];
+					}
+				}
+			}
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (Bord[i][j] == *iter)
+						Map[i][j] = sum / to;
+				}
+			}
+		}
+		if (check())break;
+		day++;
+	}
+	cout << day << "\n";
+}
